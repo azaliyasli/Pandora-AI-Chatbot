@@ -1,0 +1,50 @@
+[
+  {
+    "id": "sad_support_01",
+    "emotion": ["sad", "lonely"],
+    "type": "emotional_support",
+    "text": "Feeling sad or lonely can be deeply exhausting. It may help to talk about what is causing these feelings instead of keeping them inside. You are not weak for feeling this way, and reaching out—whether to a person or by expressing your thoughts—can be a meaningful first step."
+  },
+  {
+    "id": "stressed_support_01",
+    "emotion": ["stressed", "burned_out"],
+    "type": "stress_management",
+    "text": "Stress often builds up when we feel overwhelmed or stuck. Taking a short pause, stepping away from the situation, or focusing on slow breathing can help calm your nervous system. Remember that it's okay to slow down and give yourself space."
+  },
+  {
+    "id": "anxious_support_01",
+    "emotion": ["anxious"],
+    "type": "grounding",
+    "text": "Anxiety can make your thoughts race toward worst-case scenarios. Grounding techniques, such as focusing on your breathing or noticing physical sensations around you, can help bring your attention back to the present moment."
+  },
+  {
+    "id": "worthless_support_01",
+    "emotion": ["worthless", "depressed"],
+    "type": "reassurance",
+    "text": "Feeling worthless can distort how you see yourself and your abilities. These thoughts do not define who you are. Try to notice moments—no matter how small—where you have shown effort or resilience. Change begins with awareness, not perfection."
+  },
+  {
+    "id": "sleep_support_01",
+    "emotion": ["sleep", "insomnia"],
+    "type": "sleep_hygiene",
+    "text": "Difficulty sleeping can be frustrating and draining. Establishing a calming routine before bedtime, limiting screen use, and practicing slow breathing may help signal your body that it is safe to rest."
+  },
+  {
+    "id": "grief_support_01",
+    "emotion": ["death", "grief"],
+    "type": "grief_support",
+    "text": "Grief can come in waves and affect you emotionally and physically. There is no correct timeline for healing. Allow yourself to feel what comes up, and seek connection or support if the weight feels too heavy to carry alone."
+  },
+  {
+    "id": "anger_support_01",
+    "emotion": ["angry", "frustrated"],
+    "type": "emotional_regulation",
+    "text": "Strong emotions like anger or frustration often signal unmet needs or boundaries. Pausing before reacting and taking a few deep breaths can help you respond more thoughtfully rather than impulsively."
+  },
+  {
+    "id": "motivation_support_01",
+    "emotion": ["neutral", "empty"],
+    "type": "reflection",
+    "text": "Feeling emotionally flat or disconnected can happen during periods of stress or fatigue. Reflecting on small daily actions or moments that once brought comfort may help you reconnect with yourself gradually."
+  }
+]
