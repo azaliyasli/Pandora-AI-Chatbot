@@ -22,6 +22,8 @@ df = pd.DataFrame({
 X = df["patterns"]
 y = df["tag"]
 
-# Preprocessing
+# Encoding
 le = LabelEncoder()
 y = le.fit_transform(y)
+
+# Tokenization
