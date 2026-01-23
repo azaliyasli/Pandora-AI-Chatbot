@@ -1,5 +1,7 @@
 import pandas as pd
 import json
+
+from sklearn.metrics import accuracy_score, classification_report
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from torch.utils.data import TensorDataset, DataLoader
@@ -148,3 +150,8 @@ with torch.no_grad():
 
         y_true.extend(b_labels.cpu().numpy())
         y_pred.extend(preds.cpu().numpy())
+
+# Evaluation
+acc = accuracy_score(y_test, y_pred)
+print("Accuracy: ", acc)
+print(classification_report(y_test, y_pred))
