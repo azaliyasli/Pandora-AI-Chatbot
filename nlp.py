@@ -128,3 +128,23 @@ for epoch in range(epochs):
     print(f"Epoch {epoch + 1}/{epochs} - Average Loss: {avg_train_loss:.4f}")
 
 torch.save(model.state_dict(), "distilbert_pandora.pt") # For RAG and FastAPI
+
+# Prediction
+y_true = []
+y_pred = []
+
+model.eval()
+
+with torch.no_grad():
+    for batch in test_loader:
+        b_input_ids = batch[0].to(device)
+        b_input_mask = batch[1].to(device)
+        b_labels = batch[2].to(device)
+
+        outputs = model(b_input_ids, attention_mask=b_input_mask)
+
+        logits = outputs.logits
+        preds = torch.argmax(logits, dim=1).flatten()
+
+        y_true.extend(b_labels.cpu().numpy())
+        y_pred.extend(preds.cpu().numpy())
