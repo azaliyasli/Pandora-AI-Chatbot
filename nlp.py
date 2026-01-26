@@ -1,3 +1,4 @@
+import joblib
 import pandas as pd
 import torch
 from torch.optim import AdamW
@@ -18,6 +19,8 @@ y = df["emotion"].values
 # Label Encoding
 le = LabelEncoder()
 y_encoded = le.fit_transform(y)
+
+joblib.dump(le, "label_encoder.pkl")
 
 # Train-Test Split
 X_train, X_test, y_train, y_test = train_test_split(X, y_encoded, test_size=0.2, random_state=42)
