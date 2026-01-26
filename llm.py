@@ -1,38 +1,33 @@
-import google.generativeai as genai
-import json
-from dotenv import load_dotenv
 import os
+from dotenv import load_dotenv
+from google import genai
+from google.genai import types
 
 load_dotenv()
 
-# Gemini API Key
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-# JSON File
-with open('intents.json', 'r', encoding='utf-8') as f:
-    intents_data = json.load(f)
+def get_pandora_response(user_text, emotion, rag_hint):
+    model_id = "gemini-2.0-flash-lite"
 
-# Define instructions
-system_instruction = f"""
-Senin adın Pandora. Duygusal destek veren bir AI asistansısın. 
-Aşağıdaki kurallara ve bilgilere göre konuşmalısın:
-- Kullanıcı üzgünse empati yap.
-- Eğer kullanıcı intihardan bahsederse mutlaka yardım hattını (9152987821) paylaş.
-- Yanıtlarını şu bilgi setine dayandır: {json.dumps(intents_data['intents'][:10])}... (Verinin bir kısmını örnek olarak veriyoruz)
-"""
+    prompt = f"""
+        Role: Pandora (Empathetic friend).
+        User: "{user_text}"
+        Emotion: {emotion}
+        Strategy: {rag_hint}
+        Task: Give a short, heartfelt response.
+        """
 
-model = genai.GenerativeModel(
-    model_name="gemini-2.0-flash",
-    system_instruction=system_instruction
-)
+    try:
+        response = client.models.generate_content(
+            model=model_id,
+            contents=prompt
+        )
+        return response.text.strip()
+    except Exception as e:
+        print(f"Gemini API Error: {e}")
+        return "I am here for you, always. Tell me more about how you feel."
 
-# Chat
-chat = model.start_chat(history=[])
-
-while True:
-    user_input = input("Sen: ")
-    if user_input.lower() in ["exit", "kapat"]:
-        break
-
-    response = chat.send_message(user_input)
-    print(f"Pandora: {response.text}")
+# Test
+if __name__ == "__main__":
+    print(get_pandora_response("I'm so tired", "sad", "Respond with empathy."))
