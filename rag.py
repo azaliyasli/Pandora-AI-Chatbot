@@ -46,5 +46,5 @@ def get_final_context(user_text):
     return detected_emotion, "Provide support emphatically."
 
 # Test
-emotion, hint = get_final_context("I caught my friend is lying to me.")
-print(f"NLP: {emotion}, RAG: {hint}")
+#emotion, hint = get_final_context("I caught my friend is lying to me.")
+#print(f"NLP: {emotion}, RAG: {hint}")

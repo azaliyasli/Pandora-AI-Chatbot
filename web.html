@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pandora AI | Emotional Support</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #f4f7f6, #eef1ff);
+            height: 100vh;
+        }
+
+        .page {
+            display: grid;
+            grid-template-columns: 1fr 550px;
+            height: 100vh;
+        }
+
+        .info {
+            padding: 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .info h1 {
+            font-size: 42px;
+            color: #2d3436;
+            margin-bottom: 10px;
+        }
+
+        .info h2 {
+            font-size: 20px;
+            color: #6c5ce7;
+            margin-bottom: 30px;
+        }
+
+        .info p {
+            font-size: 16px;
+            color: #555;
+            max-width: 500px;
+            line-height: 1.6;
+        }
+
+        #chat-container {
+            background: white;
+            display: flex;
+            flex-direction: column;
+            border-left: 1px solid #eee;
+        }
+
+        #chat-header {
+            background: #6c5ce7;
+            color: white;
+            padding: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        #messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 85%;
+            line-height: 1.4;
+        }
+
+        .user {
+            align-self: flex-end;
+            background: #6c5ce7;
+            color: white;
+        }
+
+        .bot {
+            align-self: flex-start;
+            background: #f1f2f6;
+            color: #333;
+        }
+
+        .emotion-tag {
+            font-size: 0.7em;
+            color: #888;
+            margin-top: 5px;
+        }
+
+        #input-area {
+            padding: 15px;
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        input {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            padding: 10px 15px;
+            outline: none;
+        }
+
+        button {
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 40px;
+            cursor: pointer;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #fff;
+            width: 18px;
+            height: 18px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+
+    <div class="info">
+        <h1>Pandora AI</h1>
+        <h2>Emotional Support System</h2>
+        <p>
+            Pandora is an AI-powered emotional support system that detects user emotions
+            using deep learning and responds with empathetic, context-aware messages.
+            <br><br>
+            The system combines NLP-based emotion detection, Retrieval-Augmented Generation (RAG),
+            and optional LLM support for enhanced responses.
+        </p>
+    </div>
+
+    <div id="chat-container">
+        <div id="chat-header">Chat with Pandora</div>
+        <div id="messages"></div>
+        <div id="input-area">
+            <input type="text" id="user-input" placeholder="Tell me how you feel..."
+                   onkeypress="if(event.key === 'Enter') sendMessage()">
+            <button id="send-btn" onclick="sendMessage()"><span id="btn-icon">➔</span></button>
+        </div>
+    </div>
+
+</div>
+
+<script>
+async function sendMessage() {
+    const input = document.getElementById('user-input');
+    const messages = document.getElementById('messages');
+    const btn = document.getElementById('send-btn');
+    const icon = document.getElementById('btn-icon');
+
+    if (!input.value || btn.disabled) return;
+
+    const userMsg = input.value;
+    messages.innerHTML += `<div class="message user">${userMsg}</div>`;
+    input.value = '';
+    messages.scrollTop = messages.scrollHeight;
+
+    btn.disabled = true;
+    icon.innerHTML = '<div class="spinner"></div>';
+
+    try {
+        const response = await fetch('http://127.0.0.1:8000/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: userMsg })
+        });
+        const data = await response.json();
+        messages.innerHTML += `
+            <div class="message bot">
+                ${data.reply}
+                <div class="emotion-tag">Mood: ${data.emotion}</div>
+            </div>`;
+    } catch (e) {
+        messages.innerHTML += `<div class="message bot" style="color:red">Error: Connection lost.</div>`;
+    } finally {
+        btn.disabled = false;
+        icon.innerHTML = '➔';
+        messages.scrollTop = messages.scrollHeight;
+    }
+}
+</script>
+
+</body>
+</html>
