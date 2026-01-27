@@ -1,22 +1,15 @@
 import os
 from dotenv import load_dotenv
 from google import genai
-from google.genai import types
 
 load_dotenv()
 
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
 def get_pandora_response(user_text, emotion, rag_hint):
-    model_id = "gemini-2.0-flash-lite"
+    model_id = "gemini-2.5-flash"
 
-    prompt = f"""
-        Role: Pandora (Empathetic friend).
-        User: "{user_text}"
-        Emotion: {emotion}
-        Strategy: {rag_hint}
-        Task: Give a short, heartfelt response.
-        """
+    prompt = f"Role: Pandora. User: {user_text}. Emotion: {emotion}. Hint: {rag_hint}. Emphatic response:"
 
     try:
         response = client.models.generate_content(
@@ -30,4 +23,25 @@ def get_pandora_response(user_text, emotion, rag_hint):
 
 # Test
 if __name__ == "__main__":
-    print(get_pandora_response("I'm so tired", "sad", "Respond with empathy."))
+    print("--- Pandora Emotional Support Bot ---")
+    print("Type 'exit' or 'quit' to stop the conversation.\n")
+
+    while True:
+        user_input = input("You: ")
+
+        if user_input.lower() in ["exit", "quit"]:
+            print("Pandora: I'm always here if you need me. Take care! <3")
+            break
+
+        try:
+            from rag import get_final_context
+
+            emotion, hint = get_final_context(user_input)
+
+            response = get_pandora_response(user_input, emotion, hint)
+
+            print(f"\n[Detected Emotion: {emotion}]")
+            print(f"Pandora: {response}\n")
+
+        except Exception as e:
+            print(f"An error occurred: {e}")
