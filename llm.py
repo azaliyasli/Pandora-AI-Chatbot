@@ -6,10 +6,20 @@ load_dotenv()
 
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-def get_pandora_response(user_text, emotion, rag_hint):
+def get_pandora_response(user_text, emotion, rag_hint, history_context=""):
     model_id = "gemini-2.5-flash"
 
-    prompt = f"Role: Pandora. User: {user_text}. Emotion: {emotion}. Hint: {rag_hint}. Emphatic response:"
+    prompt = f"""
+        Role: Pandora (Empathetic AI friend).
+        Past Conversations:
+        {history_context}
+
+        Current Emotion: {emotion}
+        RAG Strategy: {rag_hint}
+        User's New Message: {user_text}
+
+        Instruction: Use the past conversation context if relevant to provide a more personal and caring response.
+        Pandora:"""
 
     try:
         response = client.models.generate_content(
