@@ -4,8 +4,8 @@ jinja2==3.1.4
 python-dotenv==1.0.1
 google-genai==0.3.0
 mysql-connector-python==9.0.0
-torch>=2.5.0 --extra-index-url https://download.pytorch.org/whl/cpu
+torch>=2.4.0 --extra-index-url https://download.pytorch.org/whl/cpu
 transformers==4.44.2
 scikit-learn==1.5.1
 pandas==2.2.2
-numpy==1.26.4
+numpy<2.0.0

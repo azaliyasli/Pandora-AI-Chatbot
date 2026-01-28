@@ -12,6 +12,7 @@
             font-family: 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #f4f7f6, #eef1ff);
             height: 100vh;
+            overflow: hidden;
         }
 
         #logout-global {
@@ -106,6 +107,7 @@
             display: flex;
             flex-direction: column;
             border-left: 1px solid #eee;
+            height: 100vh;
         }
 
         #chat-header {
@@ -114,6 +116,7 @@
             padding: 20px;
             font-weight: bold;
             text-align: center;
+            flex-shrink: 0;
         }
 
         #messages {
@@ -155,6 +158,7 @@
             display: flex;
             gap: 10px;
             border-top: 1px solid #eee;
+            flex-shrink: 0;
         }
 
         input[type="text"] {
@@ -174,20 +178,6 @@
             height: 40px;
             cursor: pointer;
         }
-
-        .spinner {
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 3px solid #fff;
-            width: 18px;
-            height: 18px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
@@ -200,7 +190,8 @@
     <div class="login-box">
         <h2>Pandora AI</h2>
         <input type="email" id="email" placeholder="Email">
-        <input type="password" id="password" placeholder="Password">
+        <input type="password" id="password" placeholder="Password"
+               onkeypress="if(event.key === 'Enter') login()">
         <button onclick="login()">Login</button>
     </div>
 </div>
@@ -232,16 +223,55 @@
 </div>
 
 <script>
-function login() {
+let currentUserEmail = "";
+
+function logout() {
+    currentUserEmail = "";
+    document.getElementById("email").value = "";
+    document.getElementById("password").value = "";
+    document.getElementById("messages").innerHTML = "";
+    document.getElementById("loginPage").style.display = "flex";
+    document.getElementById("chatPage").style.display = "none";
+    document.getElementById("logout-global").style.display = "none";
+}
+
+async function login() {
+    currentUserEmail = document.getElementById("email").value;
+    if (!currentUserEmail) {
+        alert("Please enter an email!");
+        return;
+    }
+
     document.getElementById("loginPage").style.display = "none";
     document.getElementById("chatPage").style.display = "grid";
     document.getElementById("logout-global").style.display = "block";
-}
 
-function logout() {
-    document.getElementById("chatPage").style.display = "none";
-    document.getElementById("loginPage").style.display = "flex";
-    document.getElementById("logout-global").style.display = "none";
+    const messages = document.getElementById('messages');
+    messages.innerHTML = '<div class="message bot">Pandora is remembering...</div>';
+
+    try {
+        const response = await fetch(`http://127.0.0.1:8000/history/${currentUserEmail}`);
+        const history = await response.json();
+
+        messages.innerHTML = "";
+
+        if (history.length === 0) {
+            messages.innerHTML = '<div class="message bot">Welcome! I am ready to listen.</div>';
+        } else {
+            history.forEach(chat => {
+                messages.innerHTML += `<div class="message user">${chat.user_message}</div>`;
+                messages.innerHTML += `
+                    <div class="message bot">
+                        ${chat.bot_response}
+                        <div class="emotion-tag">Mood: ${chat.emotion}</div>
+                    </div>`;
+            });
+        }
+        messages.scrollTop = messages.scrollHeight;
+    } catch (error) {
+        console.error("History loading failed:", error);
+        messages.innerHTML = '<div class="message bot">I couldn\'t load our past talks, but I\'m here now!</div>';
+    }
 }
 
 async function sendMessage() {
@@ -262,7 +292,7 @@ async function sendMessage() {
         const response = await fetch('http://127.0.0.1:8000/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: userMsg })
+            body: JSON.stringify({ message: userMsg, email: currentUserEmail })
         });
         const data = await response.json();
         messages.innerHTML += `
