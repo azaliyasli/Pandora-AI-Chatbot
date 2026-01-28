@@ -41,7 +41,7 @@ def get_db_connection():
     )
 
 @app.post("/chat")
-async def chat(data: ChatInput, email: str = "test@example.com"):  # Email'i şimdilik böyle alalım
+async def chat(data: ChatInput, email: str = "test@example.com"):
     try:
 
         conn = get_db_connection()
