@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Pandora AI | Emotional Support</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
     <style>
         body {
             margin: 0;
@@ -11,8 +14,63 @@
             height: 100vh;
         }
 
+        #logout-global {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            font-size: 20px;
+            color: #6c5ce7;
+            cursor: pointer;
+            z-index: 1000;
+            display: none;
+        }
+
+        #logout-global:hover {
+            opacity: 0.7;
+        }
+
+        .login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            width: 320px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .login-box h2 {
+            margin-bottom: 20px;
+            color: #6c5ce7;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            outline: none;
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 10px;
+            border-radius: 20px;
+            border: none;
+            background: #6c5ce7;
+            color: white;
+            cursor: pointer;
+        }
+
         .page {
-            display: grid;
+            display: none;
             grid-template-columns: 1fr 550px;
             height: 100vh;
         }
@@ -99,7 +157,7 @@
             border-top: 1px solid #eee;
         }
 
-        input {
+        input[type="text"] {
             flex: 1;
             border: 1px solid #ddd;
             border-radius: 20px;
@@ -107,7 +165,7 @@
             outline: none;
         }
 
-        button {
+        #send-btn {
             background: #6c5ce7;
             color: white;
             border: none;
@@ -134,7 +192,20 @@
 </head>
 <body>
 
-<div class="page">
+<div id="logout-global" onclick="logout()">
+    <i class="fa-solid fa-right-from-bracket"></i>
+</div>
+
+<div class="login-page" id="loginPage">
+    <div class="login-box">
+        <h2>Pandora AI</h2>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+    </div>
+</div>
+
+<div class="page" id="chatPage">
 
     <div class="info">
         <h1>Pandora AI</h1>
@@ -154,18 +225,29 @@
         <div id="input-area">
             <input type="text" id="user-input" placeholder="Tell me how you feel..."
                    onkeypress="if(event.key === 'Enter') sendMessage()">
-            <button id="send-btn" onclick="sendMessage()"><span id="btn-icon">➔</span></button>
+            <button id="send-btn" onclick="sendMessage()">➔</button>
         </div>
     </div>
 
 </div>
 
 <script>
+function login() {
+    document.getElementById("loginPage").style.display = "none";
+    document.getElementById("chatPage").style.display = "grid";
+    document.getElementById("logout-global").style.display = "block";
+}
+
+function logout() {
+    document.getElementById("chatPage").style.display = "none";
+    document.getElementById("loginPage").style.display = "flex";
+    document.getElementById("logout-global").style.display = "none";
+}
+
 async function sendMessage() {
     const input = document.getElementById('user-input');
     const messages = document.getElementById('messages');
     const btn = document.getElementById('send-btn');
-    const icon = document.getElementById('btn-icon');
 
     if (!input.value || btn.disabled) return;
 
@@ -175,7 +257,6 @@ async function sendMessage() {
     messages.scrollTop = messages.scrollHeight;
 
     btn.disabled = true;
-    icon.innerHTML = '<div class="spinner"></div>';
 
     try {
         const response = await fetch('http://127.0.0.1:8000/chat', {
@@ -189,11 +270,10 @@ async function sendMessage() {
                 ${data.reply}
                 <div class="emotion-tag">Mood: ${data.emotion}</div>
             </div>`;
-    } catch (e) {
+    } catch {
         messages.innerHTML += `<div class="message bot" style="color:red">Error: Connection lost.</div>`;
     } finally {
         btn.disabled = false;
-        icon.innerHTML = '➔';
         messages.scrollTop = messages.scrollHeight;
     }
 }
