@@ -59,7 +59,7 @@ All user messages are stored in a database and are reloaded when the user logs i
 
 ## 🧪 Getting Started (Local)
 
-### 1) Clone the repository
+### Clone the repository
 ```bash
 git clone https://github.com/azaliyasli/Pandora-AI-Chatbot.git
 cd Pandora-AI-Chatbot
