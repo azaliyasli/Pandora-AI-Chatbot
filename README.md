@@ -24,11 +24,8 @@ All user messages are stored in a database and are reloaded when the user logs i
 ✔ User-specific chat history persistence  
 ✔ Emotion detection with DistilBERT  
 ✔ RAG-based response generation
-
 ✔ LLM support using Google Gemini for generative responses
-
 ✔ Real-time chat interface
-
 ✔ Session handling & logout support  
 ✔ CPU-compatible and offline-friendly architecture  
 
