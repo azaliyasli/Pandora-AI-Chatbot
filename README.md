@@ -10,7 +10,7 @@ Pandora AI follows a **hybrid architecture** consisting of:
 
 - **Emotion Classification** using a DistilBERT-based deep learning model
 - **Retrieval-Augmented Generation (RAG)** for emotion-aware response selection
-- **Google Gemini** is used as an optional LLM layer to generate richer and more empathetic responses 
+- **Google Gemini** is used as an LLM layer to generate richer and more empathetic responses 
 - **User Authentication & Chat Persistence** via email-based login  
 - **Web-based Chat Interface** for real-time interaction  
 
@@ -24,7 +24,7 @@ All user messages are stored in a database and are reloaded when the user logs i
 ✔ User-specific chat history persistence  
 ✔ Emotion detection with DistilBERT  
 ✔ RAG-based response generation
-✔ Optional LLM support using Google Gemini for generative responses
+✔ LLM support using Google Gemini for generative responses
 ✔ Real-time chat interface  
 ✔ Session handling & logout support  
 ✔ CPU-compatible and offline-friendly architecture  
@@ -51,7 +51,7 @@ All user messages are stored in a database and are reloaded when the user logs i
 2. The user sends a message via the chat interface.
 3. The backend analyzes the message with a DistilBERT emotion classifier.
 4. Based on the detected emotion, the RAG module retrieves the most suitable response.
-5. If enabled, the response is enhanced using a Large Language Model (Google Gemini).
+5. The response is enhanced using a Large Language Model (Google Gemini).
 6. The response is sent back to the frontend.
 7. The entire conversation is stored and restored on future logins.
 
