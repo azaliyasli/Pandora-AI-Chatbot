@@ -55,9 +55,9 @@ async def chat(data: ChatInput):
         for chat_row in reversed(past_chats):
             history_context += f"User: {chat_row['user_message']}\nPandora: {chat_row['bot_response']}\n"
 
-        emotion, hint = get_final_context(data.message)
+        emotion, hint, retrieved_context = get_final_context(data.message)
 
-        response = get_pandora_response(data.message, emotion, hint, history_context)
+        response = get_pandora_response(data.message, emotion, hint, retrieved_context, history_context)
 
         cursor.execute(
             "INSERT INTO chat_history (email, user_message, bot_response, emotion) VALUES (%s, %s, %s, %s)",

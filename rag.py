@@ -1,13 +1,12 @@
 import torch
 import json
-import random
 import joblib
 from transformers import DistilBertForSequenceClassification, DistilBertTokenizer
+from sentence_transformers import SentenceTransformer, util
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 tokenizer = DistilBertTokenizer.from_pretrained("distilbert-base-uncased")
 
-# Load model and encoder
 le = joblib.load("label_encoder.pkl")
 model = DistilBertForSequenceClassification.from_pretrained(
     "distilbert-base-uncased",
@@ -17,15 +16,23 @@ model.load_state_dict(torch.load("distilbert_pandora.pt", map_location=device))
 model.to(device)
 model.eval()
 
-# RAG Library
-EMOTION_MAP = {
-    "fear": "negative", "anger": "negative", "sad": "sad",
-    "joy": "positive", "love": "positive", "suprise": "suprise"
-}
+embedder = SentenceTransformer('all-MiniLM-L6-v2', device=device)
+
+corpus_queries = []
+corpus_hints = []
+
+with open('rag_emotion_dataset.json', 'r', encoding='utf-8') as f:
+    rag_data = json.load(f)
+    for category in rag_data:
+        for doc in category['documents']:
+            corpus_queries.append(doc['query'])
+            corpus_hints.append(doc['response_hint'])
+
+corpus_embeddings = embedder.encode(corpus_queries, convert_to_tensor=True)
 
 
 def get_final_context(user_text):
-    # NLP Prediction
+
     inputs = tokenizer(user_text, return_tensors="pt", truncation=True, padding=True, max_length=64).to(device)
     with torch.no_grad():
         outputs = model(**inputs)
@@ -33,18 +40,16 @@ def get_final_context(user_text):
     pred_idx = torch.argmax(outputs.logits, dim=1).item()
     detected_emotion = le.inverse_transform([pred_idx])[0]
 
-    # Get RAG Data
-    rag_tag = EMOTION_MAP.get(detected_emotion, "positive")
-    with open('rag_emotion_dataset.json', 'r', encoding='utf-8') as f:
-        rag_data = json.load(f)
+    query_embedding = embedder.encode(user_text, convert_to_tensor=True)
 
-    for item in rag_data:
-        if item['emotion'] == rag_tag:
-            doc = random.choice(item['documents'])
-            return detected_emotion, doc['response_hint']
+    cos_scores = util.cos_sim(query_embedding, corpus_embeddings)[0]
 
-    return detected_emotion, "Provide support emphatically."
+    top_results = torch.topk(cos_scores, k=3)
 
-# Test
-#emotion, hint = get_final_context("I caught my friend is lying to me.")
-#print(f"NLP: {emotion}, RAG: {hint}")
+    retrieved_context = "Similar past user expressions from database:\n"
+    for idx in top_results[1]:
+        retrieved_context += f"- {corpus_queries[idx]}\n"
+
+    best_hint = corpus_hints[top_results[1][0]]
+
+    return detected_emotion, best_hint, retrieved_context

@@ -6,7 +6,8 @@ load_dotenv()
 
 client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-def get_pandora_response(user_text, emotion, rag_hint, history_context=""):
+
+def get_pandora_response(user_text, emotion, rag_hint, retrieved_context, history_context=""):
     model_id = "gemini-2.5-flash"
 
     prompt = f"""
@@ -16,9 +17,12 @@ def get_pandora_response(user_text, emotion, rag_hint, history_context=""):
 
         Current Emotion: {emotion}
         RAG Strategy: {rag_hint}
+        Context (Similar past scenarios): 
+        {retrieved_context}
+
         User's New Message: {user_text}
 
-        Instruction: Use the past conversation context if relevant to provide a more personal and caring response.
+        Instruction: Use the past conversation context and the provided RAG Strategy to provide a more personal and caring response. Consider how similar scenarios were handled.
         Pandora:"""
 
     try:
@@ -30,28 +34,3 @@ def get_pandora_response(user_text, emotion, rag_hint, history_context=""):
     except Exception as e:
         print(f"Gemini API Error: {e}")
         return "I am here for you, always. Tell me more about how you feel."
-
-# Test
-#if __name__ == "__main__":
-#    print("--- Pandora Emotional Support Bot ---")
-#    print("Type 'exit' or 'quit' to stop the conversation.\n")
-#
-#    while True:
-#        user_input = input("You: ")
-#
-#        if user_input.lower() in ["exit", "quit"]:
-#            print("Pandora: I'm always here if you need me. Take care! <3")
-#            break
-#
-#        try:
-#            from rag import get_final_context
-#
-#            emotion, hint = get_final_context(user_input)
-#
-#            response = get_pandora_response(user_input, emotion, hint)
-#
-#            print(f"\n[Detected Emotion: {emotion}]")
-#            print(f"Pandora: {response}\n")
-#
-#        except Exception as e:
-#            print(f"An error occurred: {e}")
